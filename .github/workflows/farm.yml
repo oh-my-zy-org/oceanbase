@@ -1,6 +1,8 @@
 name: Farm
 
 on:
+  push:
+    branches: [dev, master, dev_oceanbase_ci]
   pull_request:
     branches: [master, develop]
     types: [opened, reopened, synchronize, ready_for_review]
@@ -25,7 +27,7 @@ env:
 jobs:
   farm-setup:
     name: setup
-    runs-on: arc-runner-k8s-ci-org
+    runs-on: arc-runner-k8s-ci-org-test
     container:
       image: harbor.oceanbase-dev.com/obrde-test/ob-actions-runner-worker:0.0.2
     steps:
@@ -108,7 +110,7 @@ jobs:
   farm-mysqltest:
     name: mysqltest-slice-${{ matrix.slice }}
     needs: farm-setup
-    runs-on: arc-runner-k8s-ci-org
+    runs-on: arc-runner-k8s-ci-org-test
     container:
       image: harbor.oceanbase-dev.com/obrde-test/ob-actions-runner-worker:0.0.2
     strategy:
@@ -193,7 +195,7 @@ jobs:
     name: collect
     needs: farm-mysqltest
     if: ${{ always() && needs.farm-mysqltest.result != 'skipped' }}
-    runs-on: arc-runner-k8s-ci-org
+    runs-on: arc-runner-k8s-ci-org-test
     container:
       image: harbor.oceanbase-dev.com/obrde-test/ob-actions-runner-worker:0.0.2
     steps:
